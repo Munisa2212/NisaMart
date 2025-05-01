@@ -1,0 +1,166 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         String   @id @default(uuid())
+  image      String
+  first_name String
+  last_name  String
+  year       Int
+  email      String
+  password   String
+  phone      String
+  role       UserRole
+
+  region    Region? @relation(fields: [region_id], references: [id])
+  region_id String?
+
+  products Product[]
+
+  lastViews Last_view[]
+
+  comments Comment[]
+
+  likes Like[]
+
+  orders Order[]
+}
+
+enum UserRole {
+  USER
+  ADMIN
+  SUPERADMIN
+}
+
+model Region {
+  id   String @id @default(uuid())
+  name String
+
+  users User[]
+}
+
+model Product {
+  id           String           @id @default(uuid())
+  name         String
+  description  String
+  count        Int
+  image        String
+  avarage_star Int
+  discount     Int
+  price        Int
+  type         ProductType
+  condition    ProductCondition
+
+  User    User?   @relation(fields: [user_id], references: [id])
+  user_id String?
+
+  category    Category? @relation(fields: [category_id], references: [id])
+  category_id String?
+
+  product_colors Product_Color[]
+
+  lastViews Last_view[]
+
+  comments Comment[]
+
+  likes Like[]
+}
+
+enum ProductType {
+  PHONES
+  ELECTRONICS
+  LAPTOPS
+  ACCESSORIES
+}
+
+enum ProductCondition {
+  NEW
+  OLD
+}
+
+model Category {
+  id   String      @id @default(uuid())
+  name String
+  type ProductType
+
+  products Product[]
+}
+
+model Color {
+  id   String @id @default(uuid())
+  name String
+
+  product_colors Product_Color[]
+}
+
+model Product_Color {
+  id String @id @default(uuid())
+
+  product    Product @relation(fields: [product_id], references: [id])
+  product_id String
+
+  color    Color  @relation(fields: [color_id], references: [id])
+  color_id String
+}
+
+model Last_view {
+  id       String    @id @default(uuid())
+  time     DateTime
+
+  user       User     @relation(fields: [user_id], references: [id])
+  user_id     String
+
+  product    Product  @relation(fields: [product_id], references: [id])
+  product_id  String
+}
+
+model Comment {
+  id String @id @default(uuid())
+
+  User   User?   @relation(fields: [user_id], references: [id])
+  user_id String?
+
+  Product   Product? @relation(fields: [product_id], references: [id])
+  product_id String?
+
+  comment String
+  star    Int
+}
+
+model Like {
+  id String @id @default(uuid())
+
+  User   User?   @relation(fields: [user_id], references: [id])
+  user_id String?
+
+  Product   Product? @relation(fields: [product_id], references: [id])
+  product_id String?
+}
+
+model Order {
+  id String @id @default(uuid())
+
+  User   User?   @relation(fields: [user_id], references: [id])
+  user_id String?
+
+  product_id Int
+  color      OrderColor
+}
+
+enum OrderColor {
+  RED
+  YELLOW
+  GREEN
+}
