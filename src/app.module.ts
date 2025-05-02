@@ -17,12 +17,13 @@ import { ChatModule } from './chat/chat.module';
 import { MulterController } from './multer/multer.controller';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { SessionsModule } from './sessions/sessions.module';
 
 @Module({
   imports: [UserModule, PrismaModule, MailModule, SmsModule, RegionModule, CategoryModule, ColorModule, CommentModule, LikeModule, ProductModule, OrderModule, ChatModule, ServeStaticModule.forRoot({
     rootPath: join(__dirname, '..', 'uploads'),
     serveRoot: '/file',
-  })],
+  }), SessionsModule],
   controllers: [AppController, MulterController],
   providers: [AppService, PrismaService],
 })

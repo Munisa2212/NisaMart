@@ -36,10 +36,12 @@ export class MulterController {
     }),
   )
   uploadFile(@UploadedFile() file: Express.Multer.File) {
+    if (!file) {
+      return {message: 'No file uploaded. Please upload a file.'}
+    }
     const fileUrl = `http://localhost:3000/file/${file.filename}`;
     return {
-      message: 'File uploaded successfully',
-      fileUrl,
+      fileUrl
     };
   }
 }
