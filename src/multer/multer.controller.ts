@@ -1,9 +1,12 @@
-import { Controller, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Controller, Post, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiConsumes, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { diskStorage } from 'multer';
 import * as path from 'path';
+import { AuthGuard } from 'src/guards/auth.guard';
 
+
+@UseGuards(AuthGuard)
 @ApiTags('File Upload')
 @Controller('file')
 export class MulterController {
