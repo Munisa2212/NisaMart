@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateChatDto, CreateMessageDto, GetChat } from './dto/create-chat.dto';
 import { UpdateChatDto } from './dto/update-chat.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -32,20 +32,24 @@ export class ChatService {
   }
 
   async sendMessage(data: CreateMessageDto){
-    this.prisma.chatMessage.create({data: {
+    const one = await this.prisma.chatMessage.create({data: {
       ...data,
       createdAt: new Date()
     }})
 
-    return data.message
+    return {message: data.message}
   }
 
   async findChatMessages(chatId: number) {
     try {
-      const one =  await this.prisma.chatMessage.findMany({
-        where: { chatId : chatId}
-      });
-      return one
+      const one =  await this.prisma.chatMessage.findMany();
+      const result = one.filter((element) => element.chatId == chatId)
+
+      if (result.length === 0) {
+        return {message: 'No messages found'}
+      }
+
+      return result
     } catch (error) {
       throw new BadRequestException('Error fetching messages');
     }
