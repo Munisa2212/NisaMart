@@ -14,28 +14,36 @@ datasource db {
 }
 
 model User {
-  id         String   @id @default(uuid())
-  image      String
+  id         String     @id @default(uuid())
   first_name String
   last_name  String
+  image      String?
   year       Int
   email      String
   password   String
   phone      String
-  role       UserRole
+  role       UserRole   @default(USER)
+  status     UserStatus @default(PENDING)
+  time       DateTime   @default(now())
 
-  region    Region? @relation(fields: [region_id], references: [id])
-  region_id String?
+  region    Region @relation(fields: [region_id], references: [id])
+  region_id String
 
-  products Product[]
+  sessions        Session[]
+  products        Product[]
+  lastViews       LastView[]
+  comments        Comment[]
+  likes           Like[]
+  orders          Order[]
+  FromUser        Chat[]        @relation("FromUser")
+  ToUser          Chat[]        @relation("ToUser")
+  FromChatMessage ChatMessage[] @relation("FromUser")
+  ToChatMessage   ChatMessage[] @relation("ToUser")
+}
 
-  lastViews Last_view[]
-
-  comments Comment[]
-
-  likes Like[]
-
-  orders Order[]
+enum UserStatus {
+  ACTIVE
+  PENDING
 }
 
 enum UserRole {
@@ -56,26 +64,136 @@ model Product {
   name         String
   description  String
   count        Int
-  image        String
+  image        String?
   avarage_star Int
   discount     Int
   price        Int
   type         ProductType
   condition    ProductCondition
 
+  User    User   @relation(fields: [user_id], references: [id])
+  user_id String
+
+  lastViews   LastView[]
+  comments    Comment[]
+  likes       Like[]
+  orders      Order[]
+  Category    Category   @relation(fields: [category_id], references: [id])
+  category_id String
+
+  productColors ProductColor[]
+}
+
+model Color {
+  id   String @id @default(uuid())
+  name String
+
+  order Order[]
+
+  productColors ProductColor[]
+}
+
+model ProductColor {
+  id         String  @id @default(uuid())
+  product    Product @relation(fields: [product_id], references: [id])
+  product_id String
+  color      Color   @relation(fields: [color_id], references: [id])
+  color_id   String
+}
+
+model Category {
+  id   String      @id @default(uuid())
+  name String
+  type ProductType
+
+  products Product[]
+}
+
+model LastView {
+  id   String   @id @default(uuid())
+  time DateTime
+
+  user    User   @relation(fields: [user_id], references: [id])
+  user_id String
+
+  product    Product @relation(fields: [product_id], references: [id])
+  product_id String
+}
+
+model Comment {
+  id      String @id @default(uuid())
+  comment String
+  star    Int
+
   User    User?   @relation(fields: [user_id], references: [id])
   user_id String?
 
-  category    Category? @relation(fields: [category_id], references: [id])
-  category_id String?
+  Product    Product? @relation(fields: [product_id], references: [id])
+  product_id String?
+}
 
-  product_colors Product_Color[]
+model Like {
+  id String @id @default(uuid())
 
-  lastViews Last_view[]
+  User    User?   @relation(fields: [user_id], references: [id])
+  user_id String?
 
-  comments Comment[]
+  Product    Product? @relation(fields: [product_id], references: [id])
+  product_id String?
+}
 
-  likes Like[]
+model Order {
+  id String @id @default(uuid())
+
+  User    User?   @relation(fields: [user_id], references: [id])
+  user_id String?
+
+  Product    Product @relation(fields: [product_id], references: [id])
+  product_id String
+
+  color    Color?  @relation(fields: [color_id], references: [id])
+  color_id String?
+
+  count Int
+}
+
+model Chat {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+
+  fromUser User   @relation("FromUser", fields: [fromId], references: [id])
+  fromId   String
+
+  toUser User   @relation("ToUser", fields: [toId], references: [id])
+  toId   String
+
+  messages ChatMessage[]
+}
+
+model ChatMessage {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+
+  fromUser User   @relation("FromUser", fields: [fromId], references: [id])
+  fromId   String
+
+  toUser User   @relation("ToUser", fields: [toId], references: [id])
+  toId   String
+
+  Chat   Chat? @relation(fields: [chatId], references: [id])
+  chatId Int?
+
+  message String
+}
+
+model Session {
+  id        Int      @id @default(autoincrement())
+  ip        String
+  device    String
+  createdAt DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
 }
 
 enum ProductType {
@@ -88,79 +206,4 @@ enum ProductType {
 enum ProductCondition {
   NEW
   OLD
-}
-
-model Category {
-  id   String      @id @default(uuid())
-  name String
-  type ProductType
-
-  products Product[]
-}
-
-model Color {
-  id   String @id @default(uuid())
-  name String
-
-  product_colors Product_Color[]
-}
-
-model Product_Color {
-  id String @id @default(uuid())
-
-  product    Product @relation(fields: [product_id], references: [id])
-  product_id String
-
-  color    Color  @relation(fields: [color_id], references: [id])
-  color_id String
-}
-
-model Last_view {
-  id       String    @id @default(uuid())
-  time     DateTime
-
-  user       User     @relation(fields: [user_id], references: [id])
-  user_id     String
-
-  product    Product  @relation(fields: [product_id], references: [id])
-  product_id  String
-}
-
-model Comment {
-  id String @id @default(uuid())
-
-  User   User?   @relation(fields: [user_id], references: [id])
-  user_id String?
-
-  Product   Product? @relation(fields: [product_id], references: [id])
-  product_id String?
-
-  comment String
-  star    Int
-}
-
-model Like {
-  id String @id @default(uuid())
-
-  User   User?   @relation(fields: [user_id], references: [id])
-  user_id String?
-
-  Product   Product? @relation(fields: [product_id], references: [id])
-  product_id String?
-}
-
-model Order {
-  id String @id @default(uuid())
-
-  User   User?   @relation(fields: [user_id], references: [id])
-  user_id String?
-
-  product_id Int
-  color      OrderColor
-}
-
-enum OrderColor {
-  RED
-  YELLOW
-  GREEN
 }
