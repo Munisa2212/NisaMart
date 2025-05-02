@@ -44,6 +44,7 @@ export class CreateProductDto {
     })
     condition: ProductCondition
 
+
     @ApiProperty({example: ["uuid-1", "uuid-2", "uuid-3"]})
     colors: string[]
 }

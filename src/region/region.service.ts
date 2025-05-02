@@ -20,14 +20,7 @@ export class RegionService {
 
   async findAll() {
     try {
-      const one = await this.prisma.region.findMany({include: {
-        users: {
-          select: {
-            id: true,
-            email: true
-          }
-        }
-      }})
+      const one = await this.prisma.region.findMany()
       return one;
     } catch (error) {
       console.log(error)
