@@ -12,7 +12,6 @@ async function bootstrap() {
     .setTitle('NisaMart')
     .setDescription('The shop API description')
     .setVersion('1.0')
-    .addTag('NisaMart')
     .addSecurityRequirements('bearer', ['bearer'])
     .addBearerAuth()
     .build();
