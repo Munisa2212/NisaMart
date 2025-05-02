@@ -3,6 +3,7 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Request } from 'express';
+import { ProductType } from '@prisma/client';
 
 @Injectable()
 export class ProductService {
@@ -50,23 +51,31 @@ export class ProductService {
     }
   }
 
-  async findAll(name: string, category_id: string, limit: number, page: number, sortOrder: 'asc' | 'desc' = 'asc') {
+  async findAll(
+    name: string,
+    category_id: string,
+    limit: number,
+    page: number,
+    type: ProductType,
+    sortOrder: 'asc' | 'desc' = 'asc'
+  ) {
     try {
-
       const take = Number(limit);
-      let skip = (Number(page) - 1) * take;
+      const skip = (Number(page) - 1) * take;
       const query: any = {};
-
+  
       if (name) {
         query.name = name;
       }
-    
+  
       if (category_id) {
         query.category_id = category_id;
       }
-    
-      skip = (page - 1) * limit;
-
+  
+      if (type) {
+        query.type = type;
+      }
+  
       const products = await this.prisma.product.findMany({
         where: query,
         skip,
@@ -97,12 +106,14 @@ export class ProductService {
           },
         },
       });
-      return products
+  
+      return products;
     } catch (error) {
-      console.log(error)
-      throw new BadRequestException("Error")
+      console.log(error);
+      throw new BadRequestException("Error");
     }
   }
+  
 
   async findOne(id: string) {
     try {

@@ -8,6 +8,7 @@ import { AuthGuard } from 'src/guards/auth.guard';
 import { RbucGuard } from 'src/guards/rbuc.guard';
 import { Request } from 'express';
 import { ApiQuery } from '@nestjs/swagger';
+import { ProductType } from '@prisma/client';
 
 @Controller('product')
 export class ProductController {
@@ -21,31 +22,22 @@ export class ProductController {
     return this.productService.create(createProductDto, req);
   }
 
-  @ApiQuery({
-    name: "name",
-    example: "Iphone 14",
-    required: false
-  })
-  @ApiQuery({
-    name: "category_id",
-    example: "c9f79b23-46ad-485c-9fd8-2fadb428ea46",
-    required: false
-  })
-  @ApiQuery({
-    name: "limit",
-    example: 5,
-    default: 10,
-    required: false
-  })
-  @ApiQuery({
-    name: "page",
-    example: 2,
-    default: 1,
-    required: false
-  })
   @Get()
-  findAll(@Query("name") name?, @Query("category_id") category_id?, @Query("limit") limit = 10, @Query("page") page = 1) {
-    return this.productService.findAll(name, category_id, limit, page);
+  @ApiQuery({ name: 'name', required: false, type: String })
+  @ApiQuery({ name: 'category_id', required: false, type: String })
+  @ApiQuery({ name: 'limit', required: false, type: Number, example: 10 })
+  @ApiQuery({ name: 'page', required: false, type: Number, example: 1 })
+  @ApiQuery({ name: 'type', required: false, enum: ProductType })
+  @ApiQuery({ name: 'sortOrder', required: false, enum: ['asc', 'desc'], default: 'asc' })
+  async findAll(
+    @Query('name') name: string,
+    @Query('category_id') category_id: string,
+    @Query('limit') limit: number = 10,
+    @Query('page') page: number = 1,
+    @Query('type') type: ProductType,
+    @Query('sortOrder') sortOrder: 'asc' | 'desc' = 'asc',
+  ) {
+    return this.productService.findAll(name, category_id, limit, page, type, sortOrder);
   }
 
   @Get(':id')
