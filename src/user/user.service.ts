@@ -29,8 +29,8 @@ export class UserService {
 
       let otp = totp.generate(data.email + "email")
       console.log(otp, "otp")
-      // await this.mailer.sendMail(data.email, "One Time Password", otp)
-      // await this.sms.sendSMS(data.phone, "Bu Eskiz dan Test")
+      await this.mailer.sendMail(data.email, "One Time Password", otp)
+      await this.sms.sendSMS(data.phone, "Bu Eskiz dan Test")
 
       return {message: "Otp Sended"}
     } catch (error) {
@@ -70,7 +70,7 @@ export class UserService {
       await this.mailer.sendMail(data.email, "One Time Password", otp)
       await this.sms.sendSMS(data.phone, "Bu Eskiz dan Test")
 
-      return "Sended"
+      return {message: "Sended"}
     } catch (error) {
       console.log(error)
       throw new BadRequestException("resend error")
