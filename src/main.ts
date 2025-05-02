@@ -9,7 +9,7 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
 
   const config = new DocumentBuilder()
-    .setTitle('NisaMart')
+    .setTitle('Mart')
     .setDescription('The shop API description')
     .setVersion('1.0')
     .addSecurityRequirements('bearer', ['bearer'])
