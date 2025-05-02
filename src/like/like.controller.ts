@@ -12,8 +12,6 @@ import { Request } from 'express';
 export class LikeController {
   constructor(private readonly likeService: LikeService) {}
 
-  @Roles(rolesEnum.USER)
-  @UseGuards(RbucGuard)
   @UseGuards(AuthGuard)
   @Post()
   create(@Body() createLikeDto: CreateLikeDto, @Req() req: Request) {
