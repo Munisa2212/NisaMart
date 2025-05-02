@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { CreateChatDto, CreateMessageDto } from './dto/create-chat.dto';
+import { CreateChatDto, CreateMessageDto, GetChat } from './dto/create-chat.dto';
 import { UpdateChatDto } from './dto/update-chat.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 
@@ -40,4 +40,14 @@ export class ChatService {
     return data.message
   }
 
+  async findChatMessages(chatId: number) {
+    try {
+      const one =  await this.prisma.chatMessage.findMany({
+        where: { chatId : chatId}
+      });
+      return one
+    } catch (error) {
+      throw new BadRequestException('Error fetching messages');
+    }
+  }
 }

@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { ChatService } from './chat.service';
-import { CreateChatDto, CreateMessageDto } from './dto/create-chat.dto';
+import { CreateChatDto, CreateMessageDto, GetChat } from './dto/create-chat.dto';
 import { UpdateChatDto } from './dto/update-chat.dto';
+import { ApiQuery } from '@nestjs/swagger';
 
 @Controller('chat')
 export class ChatController {
@@ -15,6 +16,14 @@ export class ChatController {
   @Post("message")
   sendMessage(@Body() createChatDto: CreateMessageDto) {
     return this.chatService.sendMessage(createChatDto);
+  }
+
+  @Get("chatMessages")
+  @ApiQuery({ name: 'chatId', required: true, type: Number, example: 1 })
+  findChatMessages(
+    @Query('chatId') chatId: number
+  ) {
+    return this.chatService.findChatMessages(chatId);
   }
 
 }

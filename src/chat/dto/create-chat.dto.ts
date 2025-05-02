@@ -31,4 +31,9 @@ export class CreateMessageDto {
     message: string
 }
 
+export class GetChat{
+    @ApiProperty({example: 1})
+    chatId: number
+}
+
 

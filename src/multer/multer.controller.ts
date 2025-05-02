@@ -6,7 +6,6 @@ import * as path from 'path';
 import { AuthGuard } from 'src/guards/auth.guard';
 
 
-@UseGuards(AuthGuard)
 @ApiTags('File Upload')
 @Controller('file')
 export class MulterController {

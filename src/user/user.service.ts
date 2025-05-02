@@ -159,4 +159,14 @@ export class UserService {
       throw new BadRequestException("remove error")
     }
   }
+
+  async findAll() {
+    try {
+      const one = await this.prisma.user.findMany()
+      return one
+    } catch (error) {
+      console.log(error)
+      throw new BadRequestException("user findall error")
+    }
+  }
 }
